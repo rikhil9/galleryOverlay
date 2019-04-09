@@ -12,7 +12,7 @@ export class Draggable implements OnInit {
     public mousedown = new EventEmitter<MouseEvent>();
     public mousemove = new EventEmitter<MouseEvent>();
 
-    public mousedrag: Observable<{top, left}>;
+    public mousedrag: Observable<{top}>;
 
     @HostListener('document:mouseup', ['$event'])
     onMouseup(event: MouseEvent) {
@@ -22,6 +22,7 @@ export class Draggable implements OnInit {
     @HostListener('mousedown', ['$event'])
     onMousedown(event: MouseEvent) {
         this.mousedown.emit(event);
+        event.preventDefault();
         return false; // Call preventDefault() on the event
     }
 
@@ -37,13 +38,13 @@ export class Draggable implements OnInit {
         this.mousedrag = this.mousedown.pipe(map((event => {
             return {
                 top: event.clientY - this.element.nativeElement.getBoundingClientRect().top,
-                left: event.clientX - this.element.nativeElement.getBoundingClientRect().left,
+              //  left: event.clientX - this.element.nativeElement.getBoundingClientRect().left,
             };
         }))).pipe(
         mergeMap(
             imageOffset => this.mousemove.pipe(map((pos => ({
                 top: pos.clientY - imageOffset.top,
-                left: pos.clientX - imageOffset.left
+              //  left: pos.clientX - imageOffset.left
             })))).pipe(
             takeUntil(this.mouseup))
         ));
@@ -53,7 +54,8 @@ export class Draggable implements OnInit {
         this.mousedrag.subscribe({
             next: pos => {
                 this.element.nativeElement.style.top = pos.top + 'px';
-                this.element.nativeElement.style.left = pos.left + 'px';
+              //  this.element.nativeElement.style.left = pos.left + 'px';
+              console.log(pos.top);
             }
         });
     }
